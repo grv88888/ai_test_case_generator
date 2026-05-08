@@ -1,0 +1,26 @@
+Bug Report: Search functionality returning incorrect results
+
+Bug ID: BUG-2041
+Severity: High
+Module: Product Search
+
+Description:
+When a user searches for a product using special characters (e.g., "C++ book", "men's shoes"),
+the search returns 0 results even though matching products exist in the database.
+
+Steps to Reproduce:
+1. Navigate to the home page
+2. Enter "C++ programming" in the search bar
+3. Click the Search button
+4. Observe the results page
+
+Expected Behavior:
+Products matching "C++ programming" should appear in results.
+
+Actual Behavior:
+"No results found" is displayed despite matching products existing.
+
+Environment:
+- Browser: Chrome 124, Firefox 125
+- OS: Windows 11
+- App Version: 3.2.1

@@ -1,0 +1,16 @@
+Feature: Payment Processing
+
+As a customer, I want to pay for my order using a credit/debit card
+so that I can complete my purchase on the e-commerce platform.
+
+Acceptance Criteria:
+- User must be logged in to access the payment page
+- Accepted card types: Visa, MasterCard, RuPay
+- Card number must be 16 digits
+- CVV must be 3 digits
+- Expiry date must be in the future
+- On successful payment: show order confirmation with order ID
+- On payment failure: show "Payment failed. Please try again."
+- UPI payment option should also be available
+- Transaction must complete within 30 seconds
+- Email receipt should be sent after successful payment

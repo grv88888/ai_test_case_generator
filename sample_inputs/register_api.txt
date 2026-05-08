@@ -1,0 +1,23 @@
+API Endpoint: User Registration
+
+Method: POST
+URL: /api/v1/users/register
+
+Request Body (JSON):
+{
+  "first_name": "string (required, max 50 chars)",
+  "last_name": "string (required, max 50 chars)",
+  "email": "string (required, valid email format)",
+  "password": "string (required, min 8 chars, must contain uppercase, number, special char)",
+  "phone": "string (optional, 10 digits, Indian format)",
+  "role": "string (optional, default: 'user', allowed: 'user' | 'admin')"
+}
+
+Success Response:
+  HTTP 201 Created
+  { "message": "User registered successfully", "user_id": "uuid" }
+
+Error Responses:
+  HTTP 400 - Validation errors (missing fields, invalid format)
+  HTTP 409 - Email already exists
+  HTTP 500 - Internal server error

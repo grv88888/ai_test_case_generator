@@ -1,0 +1,242 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║          AI TEST CASE GENERATOR — COMPLETE SETUP & RUN GUIDE        ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Author  : Gaurav Rathod
+Project : AI-Powered Test Case Generator
+Stack   : Python | Ollama (LLaMA 3) | LangChain | ChromaDB | Streamlit
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 1: PREREQUISITES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Python 3.10 or above
+   Check: python --version
+
+2. pip (Python package manager)
+   Check: pip --version
+
+3. Ollama installed on your machine
+   Download from: https://ollama.com/download
+   - Windows: Download .exe installer
+   - Mac: Download .dmg installer
+   - Linux: curl -fsSL https://ollama.com/install.sh | sh
+
+4. Git (optional, for version control)
+   Download from: https://git-scm.com
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 2: INSTALLATION — STEP BY STEP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1: Unzip the project
+─────────────────────────
+Unzip the downloaded file and navigate into the folder:
+
+  cd ai_test_case_generator
+
+
+STEP 2: Create a virtual environment (recommended)
+───────────────────────────────────────────────────
+  python -m venv venv
+
+  Activate it:
+  - Windows : venv\Scripts\activate
+  - Mac/Linux: source venv/bin/activate
+
+  You should see (venv) in your terminal prompt.
+
+
+STEP 3: Install Python dependencies
+─────────────────────────────────────
+  pip install -r requirements.txt
+
+  This installs:
+  - langchain, langchain-ollama, langchain-community
+  - chromadb
+  - sentence-transformers
+  - streamlit
+  - pymupdf (for PDF support in RAG)
+
+
+STEP 4: Install Ollama and Pull LLaMA 3
+────────────────────────────────────────
+After installing Ollama from https://ollama.com, run:
+
+  ollama pull llama3
+
+  This downloads the LLaMA 3 model (~4.7 GB).
+  It only needs to be done once.
+
+  Optional models you can also pull:
+    ollama pull mistral
+    ollama pull gemma
+
+
+STEP 5: Start the Ollama server
+────────────────────────────────
+Open a SEPARATE terminal window and run:
+
+  ollama serve
+
+  Keep this terminal open while using the app.
+  Ollama runs on: http://localhost:11434
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 3: HOW TO RUN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+METHOD A: Streamlit Web UI (Recommended)
+─────────────────────────────────────────
+  streamlit run app.py
+
+  Opens in browser at: http://localhost:8501
+
+  Steps in the UI:
+  1. Select model (llama3 / mistral / gemma) from sidebar
+  2. Choose output format: Plain Text / Gherkin / Table
+  3. Select input type: User Story / Feature / Bug Report / API
+  4. Paste your input in the text box
+  5. Set number of test cases (3–15)
+  6. Click "Generate Test Cases"
+  7. Download output as CSV or JSON
+
+
+METHOD B: CLI (Command Line — no browser needed)
+─────────────────────────────────────────────────
+  Basic usage:
+    python cli.py --input "your story here" --format plain --count 5
+
+  Using a file:
+    python cli.py --file sample_inputs/login_story.txt --format gherkin --count 3
+
+  All options:
+    --input  / -i    : Input text directly
+    --file   / -f    : Path to input .txt file
+    --format         : plain | gherkin | table
+    --count  / -n    : Number of test cases (default: 5)
+    --model  / -m    : llama3 | mistral | gemma (default: llama3)
+    --type   / -t    : "User Story" | "Feature Description" | "Bug Report" | "API Endpoint"
+    --output / -o    : Save output to file
+
+  Save output to file:
+    python cli.py --file sample_inputs/login_story.txt --format plain --output results.txt
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 4: SAMPLE INPUTS TO TRY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── Sample 1: User Story (Login) ──────────────────────────────────────
+
+  As a registered user, I want to log in using my email and password
+  so that I can access my dashboard.
+
+  Acceptance Criteria:
+  - Valid credentials redirect to dashboard
+  - Invalid credentials show error message
+  - Account locks after 5 failed attempts
+  - Session expires after 30 minutes
+
+  CLI command:
+    python cli.py --file sample_inputs/login_story.txt --format plain --count 5
+
+
+── Sample 2: Feature Description (Payment) ───────────────────────────
+
+  Feature: Payment Processing
+  Users should be able to pay using credit/debit card or UPI.
+  Card must be valid, CVV 3 digits, expiry in future.
+  On success: show order confirmation.
+  On failure: show "Payment failed" message.
+
+  CLI command:
+    python cli.py --file sample_inputs/payment_feature.txt --format gherkin --count 4
+
+
+── Sample 3: Bug Report (Search) ─────────────────────────────────────
+
+  Bug: Search returns 0 results when query contains special characters
+  like "C++ book" or "men's shoes" even though products exist.
+
+  CLI command:
+    python cli.py --file sample_inputs/search_bug_report.txt --format plain --count 5
+
+
+── Sample 4: API Endpoint (Registration) ─────────────────────────────
+
+  POST /api/v1/users/register
+  Fields: first_name, last_name, email, password (required), phone (optional)
+  Returns 201 on success, 400 on validation error, 409 if email exists
+
+  CLI command:
+    python cli.py --file sample_inputs/register_api.txt --format table --count 6
+
+
+── Sample 5: Inline Quick Test ───────────────────────────────────────
+
+  python cli.py \
+    --input "User should be able to reset password via OTP sent to email" \
+    --format gherkin \
+    --count 3 \
+    --model llama3
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 5: RAG FEATURE (Upload Your Own Docs)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+What is RAG?
+  RAG = Retrieval Augmented Generation.
+  Instead of the LLM guessing, you give it YOUR documents
+  (test specs, requirement docs, SRS files) and it uses
+  that content to generate more accurate, project-specific test cases.
+
+How to use RAG in Streamlit:
+  1. Toggle ON "Enable RAG" in the sidebar
+  2. Upload a .txt or .pdf file (your spec doc)
+  3. The doc gets chunked and stored in ChromaDB locally
+  4. When you generate, relevant chunks are retrieved and
+     injected into the LLM prompt automatically
+
+RAG storage location: ./chroma_store/ (auto-created)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 6: TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Problem : "Connection refused" or "Ollama not running"
+Fix     : Open a new terminal and run: ollama serve
+
+Problem : "llama3 model not found"
+Fix     : Run: ollama pull llama3
+
+Problem : Streamlit port already in use
+Fix     : streamlit run app.py --server.port 8502
+
+Problem : chromadb import error
+Fix     : pip install chromadb --upgrade
+
+Problem : sentence-transformers slow on first run
+Reason  : It downloads the embedding model (~90 MB) on first use
+Fix     : Wait — it only happens once
+
+Problem : PDF not reading correctly
+Fix     : pip install pymupdf
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SECTION 7: FOLDER CLEANUP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+To reset ChromaDB (clear all uploaded docs):
+  Delete the chroma_store/ folder:
+    rm -rf chroma_store/    (Mac/Linux)
+    rmdir /s chroma_store   (Windows)
+
+To deactivate virtual environment:
+  deactivate

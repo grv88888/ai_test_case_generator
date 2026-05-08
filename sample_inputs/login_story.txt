@@ -1,0 +1,11 @@
+As a registered user, I want to log in to the application using my email and password
+so that I can access my personal dashboard securely.
+
+Acceptance Criteria:
+- Valid email and password should redirect user to the dashboard
+- Invalid credentials should display: "Invalid email or password"
+- Empty fields should show: "Email and Password are required"
+- After 5 consecutive failed login attempts, the account should be locked for 30 minutes
+- A "Forgot Password?" link should be available on the login page
+- Passwords are case-sensitive
+- Session should expire after 30 minutes of inactivity

@@ -1,0 +1,431 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║     AI TEST CASE GENERATOR — INTERVIEW QUESTIONS & ANSWERS          ║
+║                     (For Personal Reference)                        ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Prepared by : Gaurav Rathod
+Project     : AI-Powered Test Case Generator
+Stack       : Python | Ollama (LLaMA 3) | LangChain | ChromaDB | Streamlit
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 1: PROJECT-LEVEL QUESTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q1. Can you explain your AI Test Case Generator project?
+────────────────────────────────────────────────────────
+A: I built a locally-hosted AI application that automatically generates
+   structured test cases from user stories, feature descriptions, bug
+   reports, or API specs. It uses Ollama to run LLaMA 3 locally on my
+   machine — no internet or API key needed. LangChain handles the prompt
+   templating and LLM chain logic, ChromaDB stores embedded documents for
+   RAG, and Streamlit provides the web interface. The tool supports three
+   output formats: Plain Text, Gherkin (BDD), and Table format, and
+   allows export to CSV and JSON.
+
+
+Q2. Why did you choose Ollama instead of OpenAI or Gemini API?
+───────────────────────────────────────────────────────────────
+A: Three reasons:
+   1. Cost: Ollama is completely free. OpenAI charges per token.
+   2. Privacy: Everything runs locally — no data leaves my machine.
+      This is critical in enterprise QA where test specs are confidential.
+   3. Learning: I wanted to understand how LLMs work under the hood,
+      not just consume an API. Ollama lets me experiment with multiple
+      models like LLaMA 3, Mistral, and Gemma without any cost.
+
+
+Q3. What problem does this project solve?
+──────────────────────────────────────────
+A: Writing test cases manually is time-consuming and repetitive.
+   A QA engineer typically spends 30-40% of their time writing test
+   cases for standard scenarios. My tool automates that first draft —
+   you paste a user story and get 5-10 structured test cases in seconds.
+   It doesn't replace QA judgment, but it significantly speeds up the
+   initial test design phase.
+
+
+Q4. What are the limitations of your project?
+──────────────────────────────────────────────
+A: Honest limitations I'm aware of:
+   1. LLM output quality depends on prompt quality — vague input gives
+      vague test cases.
+   2. LLaMA 3 on a laptop without GPU runs slowly (~30-60 seconds per
+      generation). A GPU would speed it up significantly.
+   3. The CSV/JSON parser assumes Plain Text format — Gherkin/Table
+      exports are raw text only.
+   4. RAG works best with structured text documents. Scanned PDFs
+      without OCR won't index well.
+   5. No authentication or multi-user support — it's a personal tool.
+
+
+Q5. How would you improve this project in the future?
+──────────────────────────────────────────────────────
+A: Several improvements I'm planning:
+   1. Fine-tune a small model on real QA test case datasets
+   2. Add test case validation (check for duplicate/redundant cases)
+   3. Integrate with Jira API to directly create test cases in Jira
+   4. Add GitHub Actions workflow to auto-generate test cases on PR
+   5. Support Excel (.xlsx) export for business stakeholders
+   6. Add a feedback loop — user rates generated cases, improves prompts
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 2: LLM & AI CONCEPT QUESTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q6. What is an LLM? How does it work?
+───────────────────────────────────────
+A: LLM stands for Large Language Model. It is a deep learning model
+   trained on massive amounts of text data using the Transformer
+   architecture. It learns to predict the next token (word/subword)
+   given a sequence of previous tokens.
+
+   At inference time:
+   - You give it a prompt (input text)
+   - It generates tokens one by one based on probability
+   - The output is the most likely continuation of your prompt
+
+   Examples: LLaMA 3 (Meta), Mistral, Gemma (Google), GPT-4 (OpenAI)
+
+
+Q7. What is Ollama? How is it different from using the OpenAI API?
+────────────────────────────────────────────────────────────────────
+A: Ollama is an open-source tool that lets you download and run LLMs
+   locally on your machine. It manages model files, hardware acceleration
+   (GPU/CPU), and exposes a local REST API on port 11434.
+
+   Key differences vs OpenAI:
+   ┌──────────────┬──────────────────┬──────────────────┐
+   │              │ Ollama (Local)   │ OpenAI API       │
+   ├──────────────┼──────────────────┼──────────────────┤
+   │ Cost         │ Free             │ Pay per token    │
+   │ Internet     │ Not needed       │ Required         │
+   │ Privacy      │ Data stays local │ Sent to cloud    │
+   │ Speed        │ Depends on GPU   │ Fast (cloud)     │
+   │ Models       │ Open-source only │ GPT-4, GPT-3.5   │
+   └──────────────┴──────────────────┴──────────────────┘
+
+
+Q8. What is LangChain? Why did you use it?
+───────────────────────────────────────────
+A: LangChain is a Python framework that simplifies building applications
+   with LLMs. Instead of manually formatting prompts and parsing outputs,
+   LangChain provides:
+   - PromptTemplate: Reusable, parameterized prompt templates
+   - LLMChain: Connect a prompt to an LLM and get output
+   - Memory: Store conversation history
+   - Agents & Tools: LLM can call functions/APIs
+
+   I used it because it made my prompt logic clean and reusable.
+   Without LangChain, I would have to manually format strings,
+   call the Ollama API, and parse responses — LangChain abstracts all that.
+
+
+Q9. What is Prompt Engineering?
+─────────────────────────────────
+A: Prompt Engineering is the practice of designing and optimizing the
+   text input given to an LLM to get better, more reliable outputs.
+
+   Techniques I used in this project:
+
+   1. Zero-shot prompting:
+      "Generate 5 test cases for this user story: [story]"
+      No examples given — LLM uses its training knowledge.
+
+   2. Few-shot prompting:
+      Giving 1-2 examples of the expected output format in the prompt
+      so the LLM follows the same structure.
+      Example: "Here is a sample test case: TC-001: Login... Now generate..."
+
+   3. Role prompting:
+      "You are an expert QA Engineer with 10 years of experience..."
+      This anchors the LLM's behavior to a specific persona.
+
+   4. Chain-of-thought:
+      Asking the LLM to "think step by step" before generating output.
+      Improves accuracy for complex inputs.
+
+   5. Structured output prompting:
+      Specifying exact format in the prompt:
+      "Each test case must have: TC ID, Preconditions, Steps, Expected Result"
+
+
+Q10. What is RAG (Retrieval Augmented Generation)?
+────────────────────────────────────────────────────
+A: RAG is a technique where instead of relying only on the LLM's training
+   knowledge, you first retrieve relevant information from a document store
+   and inject it into the prompt as context.
+
+   How it works in my project:
+   Step 1 — Indexing:
+     User uploads a spec document (.txt or .pdf)
+     → Document is split into chunks
+     → Each chunk is converted to a vector (embedding)
+     → Vectors are stored in ChromaDB
+
+   Step 2 — Retrieval:
+     User inputs a user story
+     → Input is converted to a vector
+     → ChromaDB finds top-3 most similar chunks (cosine similarity)
+     → Those chunks are added to the prompt as context
+
+   Step 3 — Generation:
+     LLM receives: [context from docs] + [user story] → generates test cases
+
+   Why RAG matters in QA:
+   Your project-specific requirements are not in the LLM's training data.
+   RAG lets the model use YOUR requirement documents to generate
+   project-specific, accurate test cases.
+
+
+Q11. What is ChromaDB? Why did you choose it?
+──────────────────────────────────────────────
+A: ChromaDB is an open-source, local vector database. It stores
+   embeddings (numerical representations of text) and supports
+   fast similarity search.
+
+   I chose ChromaDB because:
+   1. Runs 100% locally — no cloud, no cost
+   2. Easy Python API
+   3. Supports cosine similarity search out of the box
+   4. Persistent storage (data survives app restarts)
+
+   Alternatives: Pinecone (cloud), Weaviate, FAISS (Facebook)
+
+
+Q12. What are embeddings?
+──────────────────────────
+A: Embeddings are numerical vector representations of text. Similar
+   meaning text produces vectors that are close to each other in
+   vector space.
+
+   Example:
+   "login failure" → [0.23, -0.45, 0.78, ...] (384 dimensions)
+   "authentication error" → [0.21, -0.43, 0.76, ...] (similar vector)
+
+   I used the sentence-transformers model "all-MiniLM-L6-v2" to
+   generate embeddings. It runs locally, is fast, and produces
+   384-dimensional vectors.
+
+   ChromaDB then uses cosine similarity to find which stored chunks
+   are closest to the user's query.
+
+
+Q13. What is the temperature parameter in LLMs?
+────────────────────────────────────────────────
+A: Temperature controls the randomness/creativity of LLM output.
+
+   - Temperature = 0.0: Deterministic, always same output. Best for
+     structured tasks like test case generation.
+   - Temperature = 0.5: Some variation. Good for summaries.
+   - Temperature = 1.0: Creative/random. Good for storytelling.
+   - Temperature > 1.0: Very unpredictable.
+
+   I used temperature=0.3 in my project because test case generation
+   needs consistent, structured output, not creative variation.
+
+
+Q14. What is the difference between LLaMA 3, Mistral, and Gemma?
+──────────────────────────────────────────────────────────────────
+A:
+   ┌─────────┬────────────┬───────────────────────────────────┐
+   │ Model   │ By         │ Notes                             │
+   ├─────────┼────────────┼───────────────────────────────────┤
+   │ LLaMA 3 │ Meta       │ Strong general reasoning, best    │
+   │         │            │ for structured output. 8B params. │
+   ├─────────┼────────────┼───────────────────────────────────┤
+   │ Mistral │ Mistral AI │ Very fast, efficient. Slightly    │
+   │         │            │ smaller but punches above weight. │
+   ├─────────┼────────────┼───────────────────────────────────┤
+   │ Gemma   │ Google     │ Good for code/technical prompts.  │
+   │         │            │ Smaller model, lower RAM usage.   │
+   └─────────┴────────────┴───────────────────────────────────┘
+
+   For test case generation, LLaMA 3 gives the most structured
+   and detailed output in my experience.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 3: TECHNICAL / CODE QUESTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q15. Walk me through your code architecture.
+──────────────────────────────────────────────
+A: The project is split into 4 main layers:
+
+   1. app.py (Presentation Layer)
+      - Streamlit UI with sidebar settings and two-column layout
+      - Handles user inputs and display of outputs
+      - Calls generator.py and rag_handler.py
+
+   2. src/generator.py (Core AI Layer)
+      - Initializes Ollama LLM via LangChain
+      - Contains 3 prompt templates (Plain, Gherkin, Table)
+      - Builds LLMChain and invokes it with user parameters
+
+   3. src/rag_handler.py (Knowledge Layer)
+      - Loads and chunks uploaded documents
+      - Generates embeddings using sentence-transformers
+      - Stores/retrieves from ChromaDB
+
+   4. src/utils.py (Export Layer)
+      - Parses LLM text output into structured data
+      - Exports to CSV and JSON formats
+
+   5. cli.py (Alternative Interface)
+      - argparse-based CLI for terminal usage
+      - Same generator.py backend, no Streamlit dependency
+
+
+Q16. How did you handle chunking in RAG?
+─────────────────────────────────────────
+A: I implemented a sliding window chunking approach:
+   - Chunk size: 500 characters
+   - Overlap: 50 characters (to avoid losing context at boundaries)
+
+   Example:
+   Text: "ABCDE...500 chars...XYZ | overlap 50 chars | next chunk..."
+
+   The overlap ensures that if a sentence spans two chunks, both
+   chunks have partial context and retrieval won't miss key info.
+
+   Code:
+     start = 0
+     while start < len(text):
+         end = start + CHUNK_SIZE
+         chunks.append(text[start:end])
+         start += CHUNK_SIZE - CHUNK_OVERLAP
+
+
+Q17. How does your export to CSV work?
+────────────────────────────────────────
+A: The LLM output is raw text in TC-001 format. I parse it using
+   regex and string matching:
+   1. Detect TC ID lines: regex r"(TC-\d+):\s*(.*)"
+   2. Detect field labels: "Preconditions:", "Expected Result:", etc.
+   3. Accumulate steps into a list, join with " | "
+   4. Write each TC as a CSV row using Python's csv module
+
+   This works well for Plain Text format. Gherkin and Table outputs
+   are exported as raw text since they're already structured.
+
+
+Q18. Why did you use sentence-transformers instead of Ollama for embeddings?
+─────────────────────────────────────────────────────────────────────────────
+A: Two reasons:
+   1. Speed: sentence-transformers (all-MiniLM-L6-v2) generates
+      embeddings in milliseconds. Using Ollama for embeddings would
+      require a separate embedding model and be slower.
+   2. Simplicity: sentence-transformers integrates directly with
+      ChromaDB. I could pass embeddings as a list of floats directly
+      to the collection.add() method.
+
+   all-MiniLM-L6-v2 is a 22M parameter model — tiny, fast, and
+   produces high-quality 384-dim embeddings for semantic similarity.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 4: QA DOMAIN + AI COMBINATION QUESTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q19. Do you think AI will replace QA engineers?
+────────────────────────────────────────────────
+A: No — AI will augment QA engineers, not replace them. Here's why:
+   - AI can generate first drafts but cannot understand business context
+   - It can miss domain-specific edge cases that require human judgment
+   - Exploratory testing, user empathy, and risk analysis are human skills
+   - AI-generated test cases need review and validation by a QA engineer
+
+   The future is "AI-assisted QA" — engineers who know how to use AI
+   tools will be more productive and valuable, not replaced.
+
+
+Q20. How would you integrate this tool into a CI/CD pipeline?
+──────────────────────────────────────────────────────────────
+A: I would:
+   1. Trigger the CLI on every PR/commit via GitHub Actions
+   2. Extract user stories from the PR description or Jira ticket
+   3. Run: python cli.py --input "$story" --format plain --output tc.txt
+   4. Post the generated test cases as a PR comment or Jira comment
+   5. A QA engineer then reviews and approves before execution
+
+   This creates a "test case generation" step in the pipeline that
+   ensures every feature has at least a baseline set of test cases
+   before code review.
+
+
+Q21. What is Gherkin format and why is it used in BDD?
+────────────────────────────────────────────────────────
+A: Gherkin is a plain-English syntax used to write BDD (Behavior Driven
+   Development) test scenarios that both developers and non-technical
+   stakeholders can understand.
+
+   Structure:
+     Feature: Login
+       Scenario: Successful login with valid credentials
+         Given the user is on the login page
+         When the user enters valid email and password
+         And clicks the Login button
+         Then the user should be redirected to the dashboard
+         And a welcome message should be displayed
+
+   Tools that use Gherkin: Cucumber, Behave (Python), SpecFlow (.NET)
+
+   In my project, the Gherkin template generates these scenarios
+   directly from user stories using LangChain prompts.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PART 5: QUICK FIRE DEFINITIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Q: What is a transformer architecture?
+A: A deep learning architecture that uses attention mechanisms to
+   understand relationships between all words in a sequence simultaneously,
+   unlike older RNN models that processed words sequentially.
+
+Q: What is tokenization in LLMs?
+A: Breaking text into smaller units (tokens) before feeding to the model.
+   A token is roughly 3-4 characters or 0.75 words. LLMs have a
+   context window limit measured in tokens (e.g., LLaMA 3 = 8192 tokens).
+
+Q: What is cosine similarity?
+A: A metric to measure similarity between two vectors.
+   Value of 1 = identical direction (very similar)
+   Value of 0 = perpendicular (no similarity)
+   Value of -1 = opposite direction
+   Used by ChromaDB to find the most relevant document chunks.
+
+Q: What is fine-tuning?
+A: Training a pre-trained model further on a smaller, specific dataset
+   to improve its performance on a particular task. Example: fine-tuning
+   LLaMA 3 on 10,000 real QA test cases to make it generate better
+   test cases than a base model.
+
+Q: What is a vector database?
+A: A database optimized for storing and searching high-dimensional
+   vectors (embeddings). Examples: ChromaDB, Pinecone, Weaviate, FAISS.
+   Traditional SQL can't efficiently search by semantic similarity —
+   vector DBs can do this in milliseconds.
+
+Q: What is Streamlit?
+A: An open-source Python library that turns Python scripts into
+   interactive web applications. No HTML/CSS/JS needed. Ideal for
+   quick AI prototypes and data tools.
+
+Q: What is the difference between RAG and Fine-tuning?
+A:
+   RAG: Fetch relevant docs at runtime → inject into prompt → generate
+        Best for: Dynamic knowledge, frequently updated content
+        Cost: Low (no training needed)
+
+   Fine-tuning: Train the model on new data to update its weights
+        Best for: Teaching the model a new style or domain
+        Cost: High (requires GPU, data, time)
+
+   RAG is usually preferred first because it's cheaper and faster.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+END OF INTERVIEW Q&A GUIDE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
